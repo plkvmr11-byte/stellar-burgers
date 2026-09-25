@@ -14,7 +14,8 @@ export const OrderInfoUI = memo(function OrderInfoUI({
 }: OrderInfoUIProps): React.JSX.Element {
   return (
     <div className={styles.wrap}>
-      <h3 className={`text text_type_main-medium  pb-3 pt-10 ${styles.header}`}>
+      <p className="text text_type_digits-default pt-10 pb-10">#{orderInfo.number}</p>
+      <h3 className={`text text_type_main-medium pb-3 ${styles.header}`}>
         {orderInfo.name}
       </h3>
       <OrderStatus status={orderInfo.status} />
