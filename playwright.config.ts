@@ -76,5 +76,9 @@ export default defineConfig({
     command: 'npm run start',
     url: 'http://localhost:4000',
     reuseExistingServer: !process.env.CI,
-  }
+    env: {
+      ...process.env,
+      BURGER_API_URL: 'https://norma.education-services.ru/api',
+    },
+  },
 });
