@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import path from 'path';
 
-test.describe('add ingredients to constructor works correctly', function () {
+test.describe('ingredient modal works correctly', function () {
   test.beforeEach(async ({ page }) => {
     await page.routeFromHAR(
       path.resolve(process.cwd(), 'tests', 'hars', 'constructor.har'),
@@ -19,9 +19,13 @@ test.describe('add ingredients to constructor works correctly', function () {
       .getByRole('listitem')
       .filter({ hasText: 'Тестовая булка' });
 
-    await bun.getByRole('link').click();
-
     const modal = page.locator('#modals');
+
+    await expect(
+      modal.getByRole('heading', { name: 'Детали ингредиента' })
+    ).not.toBeVisible();
+
+    await bun.getByRole('link').click();
 
     await expect(
       modal.getByRole('heading', { name: 'Детали ингредиента' })
@@ -30,22 +34,6 @@ test.describe('add ingredients to constructor works correctly', function () {
     await expect(
       modal.getByText('Тестовая булка', { exact: true })
     ).toBeVisible();
-  });
-
-  test('добавляет булку в конструктор', async ({ page }) => {
-    const bun = page
-      .getByRole('listitem')
-      .filter({ hasText: 'Тестовая булка' });
-
-    await bun.getByRole('button', { name: 'Добавить' }).click();
-
-    await expect(page.getByTestId('constructor-bun-1')).toContainText(
-      'Тестовая булка'
-    );
-
-    await expect(page.getByTestId('constructor-bun-2')).toContainText(
-      'Тестовая булка'
-    );
   });
 
   test('закрывает модальное окно по клику на крестик', async ({ page }) => {
@@ -66,6 +54,39 @@ test.describe('add ingredients to constructor works correctly', function () {
     await expect(
       modal.getByRole('heading', { name: 'Детали ингредиента' })
     ).not.toBeVisible();
+  });
+});
+
+test.describe('add ingredients to constructor works correctly', function () {
+  test.beforeEach(async ({ page }) => {
+    await page.routeFromHAR(
+      path.resolve(process.cwd(), 'tests', 'hars', 'constructor.har'),
+      {
+        url: 'https://norma.education-services.ru/api/**',
+        update: false,
+      }
+    );
+
+    await page.goto('/');
+  });
+
+  test('добавляет булку в конструктор', async ({ page }) => {
+    const bun = page
+      .getByRole('listitem')
+      .filter({ hasText: 'Тестовая булка' });
+
+    await expect(page.getByTestId('constructor-bun-1')).not.toBeVisible();
+    await expect(page.getByTestId('constructor-bun-2')).not.toBeVisible();
+
+    await bun.getByRole('button', { name: 'Добавить' }).click();
+
+    await expect(page.getByTestId('constructor-bun-1')).toContainText(
+      'Тестовая булка'
+    );
+
+    await expect(page.getByTestId('constructor-bun-2')).toContainText(
+      'Тестовая булка'
+    );
   });
 });
 
@@ -104,19 +125,33 @@ test.describe('create order', function () {
 
   test('создаёт заказ и очищает конструктор', async ({ page }) => {
     const bun = page
-        .getByRole('listitem')
-        .filter({ hasText: 'Тестовая булка' });
+      .getByRole('listitem')
+      .filter({ hasText: 'Тестовая булка' });
 
     const main = page
-        .getByRole('listitem')
-        .filter({ hasText: 'Тестовая начинка' });
+      .getByRole('listitem')
+      .filter({ hasText: 'Тестовая начинка' });
 
     await bun.getByRole('button', { name: 'Добавить' }).click();
     await main.getByRole('button', { name: 'Добавить' }).click();
 
-    await page.getByRole('button', { name: 'Оформить заказ' }).click();
-
     const modal = page.locator('#modals');
+
+    await expect(page.getByTestId('constructor-bun-1')).toContainText(
+      'Тестовая булка'
+    );
+
+    await expect(page.getByTestId('constructor-bun-2')).toContainText(
+      'Тестовая булка'
+    );
+
+    await expect(page.getByTestId('constructor-ingredients')).toContainText(
+      'Тестовая начинка'
+    );
+
+    await expect(modal.getByTestId('order-number')).not.toBeVisible();
+
+    await page.getByRole('button', { name: 'Оформить заказ' }).click();
 
     await expect(modal.getByTestId('order-number')).toHaveText('123456');
 
@@ -124,11 +159,11 @@ test.describe('create order', function () {
     await expect(page.getByTestId('constructor-bun-2')).not.toBeVisible();
 
     await expect(page.getByTestId('constructor-ingredients')).toContainText(
-        'Выберите начинку'
+      'Выберите начинку'
     );
 
     await modal.locator('button').first().click();
 
     await expect(modal.getByTestId('order-number')).not.toBeVisible();
-    });
+  });
 });

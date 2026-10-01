@@ -19,69 +19,69 @@ describe('constructorReducer', () => {
   });
 
   test('добавляет булку в конструктор', () => {
-  const bun = {
-    _id: '1',
-    name: 'Краторная булка N-200i',
-    type: 'bun',
-    proteins: 13.5,
-    fat: 5.5,
-    carbohydrates: 22.5,
-    calories: 420,
-    price: 1255,
-    image: 'image.jpg',
-    image_large: 'image-large.jpg',
-    image_mobile: 'image-mobile.jpg',
-  };
+    const bun = {
+      _id: '1',
+      name: 'Краторная булка N-200i',
+      type: 'bun',
+      proteins: 13.5,
+      fat: 5.5,
+      carbohydrates: 22.5,
+      calories: 420,
+      price: 1255,
+      image: 'image.jpg',
+      image_large: 'image-large.jpg',
+      image_mobile: 'image-mobile.jpg',
+    };
 
-  const action = addIngredient(bun);
+    const action = addIngredient(bun);
 
-  const state = constructorReducer(
-    {
-      bun: null,
+    const state = constructorReducer(
+      {
+        bun: null,
+        ingredients: [],
+      },
+      action
+    );
+
+    expect(state).toEqual({
+      bun: action.payload,
       ingredients: [],
-    },
-    action
-  );
-
-  expect(state).toEqual({
-    bun: action.payload,
-    ingredients: [],
+    });
   });
-});
 
   test('добавляет начинку в конструктор', () => {
-  const ingredient = {
-    _id: '2',
-    name: 'Соус Spicy-X',
-    type: 'sauce',
-    proteins: 1,
-    fat: 2,
-    carbohydrates: 3,
-    calories: 30,
-    price: 90,
-    image: 'sauce.jpg',
-    image_large: 'sauce-large.jpg',
-    image_mobile: 'sauce-mobile.jpg',
-  };
+    const ingredient = {
+      _id: '2',
+      name: 'Соус Spicy-X',
+      type: 'sauce',
+      proteins: 1,
+      fat: 2,
+      carbohydrates: 3,
+      calories: 30,
+      price: 90,
+      image: 'sauce.jpg',
+      image_large: 'sauce-large.jpg',
+      image_mobile: 'sauce-mobile.jpg',
+    };
 
-  const action = addIngredient(ingredient);
+    const action = addIngredient(ingredient);
 
-  const state = constructorReducer(
-    {
+    const state = constructorReducer(
+      {
+        bun: null,
+        ingredients: [],
+      },
+      action
+    );
+
+    expect(state).toEqual({
       bun: null,
-      ingredients: [],
-    },
-    action
-  );
-
-  expect(state).toEqual({
-    bun: null,
-    ingredients: [action.payload],
+      ingredients: [action.payload],
+    });
   });
-});
 
   test('удаляет ингредиент из конструктора', () => {
-    const ingredient = {
+    const firstIngredient = {
       _id: '2',
       name: 'Соус Spicy-X',
       type: 'sauce',
@@ -96,17 +96,32 @@ describe('constructorReducer', () => {
       id: 'ingredient-1',
     };
 
+    const secondIngredient = {
+      _id: '2',
+      name: 'Соус Spicy-X',
+      type: 'sauce',
+      proteins: 1,
+      fat: 2,
+      carbohydrates: 3,
+      calories: 30,
+      price: 90,
+      image: 'sauce.jpg',
+      image_large: 'sauce-large.jpg',
+      image_mobile: 'sauce-mobile.jpg',
+      id: 'ingredient-2',
+    };
+
     const state = constructorReducer(
       {
         bun: null,
-        ingredients: [ingredient],
+        ingredients: [firstIngredient, secondIngredient],
       },
-      removeIngredient(ingredient.id)
+      removeIngredient(firstIngredient.id)
     );
 
     expect(state).toEqual({
       bun: null,
-      ingredients: [],
+      ingredients: [secondIngredient],
     });
   });
 
@@ -171,17 +186,55 @@ describe('constructorReducer', () => {
       id: 'ingredient-1',
     };
 
+    const secondIngredient = {
+      _id: '2',
+      name: 'Второй ингредиент',
+      type: 'main',
+      proteins: 2,
+      fat: 2,
+      carbohydrates: 2,
+      calories: 20,
+      price: 200,
+      image: 'second.jpg',
+      image_large: 'second-large.jpg',
+      image_mobile: 'second-mobile.jpg',
+      id: 'ingredient-2',
+    };
+
+    const thirdIngredient = {
+      _id: '3',
+      name: 'Третий ингредиент',
+      type: 'main',
+      proteins: 3,
+      fat: 3,
+      carbohydrates: 3,
+      calories: 30,
+      price: 300,
+      image: 'third.jpg',
+      image_large: 'third-large.jpg',
+      image_mobile: 'third-mobile.jpg',
+      id: 'ingredient-3',
+    };
+
     const state = constructorReducer(
       {
         bun: null,
-        ingredients: [firstIngredient],
+        ingredients: [
+          firstIngredient,
+          secondIngredient,
+          thirdIngredient,
+        ],
       },
       moveIngredient({ from: -1, to: 1 })
     );
 
     expect(state).toEqual({
       bun: null,
-      ingredients: [firstIngredient],
+      ingredients: [
+        firstIngredient,
+        secondIngredient,
+        thirdIngredient,
+      ],
     });
   });
 
